@@ -82,18 +82,19 @@ public class MovieApp {
 
 			if (qd.queryType == QueryTypes.ACTORS_AND_MORE) {
 				
-				String sqlActorsMore = "SELECT DISTINCT Person.FirstName AS first_name, Person.LastName AS last_name, Movies.Title AS title, "
-										+ "ParticipantDid.Produced AS produced, ParticipantDid.Directed AS directed, "
-										+ "ParticipantDid.Composed AS composed, GROUP_CONCAT(Genre.Name SEPARATOR ',') AS movie_genre "
-										+ "FROM (((((Actor INNER JOIN Person ON Person.ID = Actor.PersonId) "
-										+ "INNER JOIN Participant ON Participant.PersonId = Person.ID) "
-										+ "INNER JOIN ParticipantDid ON Participant.PersonId = ParticipantDid.PersonId) "
-										+ "INNER JOIN Movies ON Movies.ID = ParticipantDid.MovieId) "
-										+ "INNER JOIN MovieGenre ON Movies.ID = MovieGenre.MovieId) "
-										+ "INNER JOIN Genre ON MovieGenre.GenreId = Genre.ID "
-										+ "GROUP BY Movies.ID "
-										+ "ORDER BY Person.LastName ASC, Person.FirstName ASC, Movies.Title ASC;";
-				
+				String sqlActorsMore =
+						"SELECT DISTINCT Person.FirstName AS first_name, Person.LastName AS last_name, Movies.Title AS title, "
+							+ "ParticipantDid.Produced AS produced, ParticipantDid.Directed AS directed, "
+							+ "ParticipantDid.Composed AS composed, GROUP_CONCAT(Genre.Name SEPARATOR ',') AS movie_genre "
+							+ "FROM (((((Actor INNER JOIN Person ON Person.ID = Actor.PersonId) "
+							+ "INNER JOIN Participant ON Participant.PersonId = Person.ID) "
+							+ "INNER JOIN ParticipantDid ON Participant.PersonId = ParticipantDid.PersonId) "
+							+ "INNER JOIN Movies ON Movies.ID = ParticipantDid.MovieId) "
+							+ "INNER JOIN MovieGenre ON Movies.ID = MovieGenre.MovieId) "
+							+ "INNER JOIN Genre ON MovieGenre.GenreId = Genre.ID "
+							+ "GROUP BY Movies.ID "
+							+ "ORDER BY Person.LastName ASC, Person.FirstName ASC, Movies.Title ASC;";
+
 				//Create the PreparedStatement for the sql, no arguments used for this one
 				PreparedStatement stmt = connection.prepareStatement(sqlActorsMore);
 
@@ -107,14 +108,15 @@ public class MovieApp {
 				
 			} else if (qd.queryType == QueryTypes.REVENUE_BY_DIRECTOR) {
 				
-				String sqlDirectorRev =	"SELECT Person.FirstName AS first, Person.LastName AS last, COUNT(Movies.Title) AS movies_directed, "
-										+ "CONCAT('$' , FORMAT(SUM(Cast(REPLACE(Movies.Revenue, ',','') AS INT)), 0)) AS total_revenue "
-										+ "FROM ((Person INNER JOIN Participant ON Person.ID = Participant.PersonId) "
-										+ "INNER JOIN ParticipantDid ON Participant.PersonId = ParticipantDid.PersonId) "
-										+ "INNER JOIN Movies ON Movies.ID = ParticipantDid.MovieId "
-										+ "WHERE (ParticipantDid.Directed = 'YES') "
-										+ "GROUP BY Person.ID "
-										+ "ORDER BY last ASC, first ASC;";
+				String sqlDirectorRev =
+						"SELECT Person.FirstName AS first, Person.LastName AS last, COUNT(Movies.Title) AS movies_directed, "
+							+ "CONCAT('$' , FORMAT(SUM(Cast(REPLACE(Movies.Revenue, ',','') AS INT)), 0)) AS total_revenue "
+							+ "FROM ((Person INNER JOIN Participant ON Person.ID = Participant.PersonId) "
+							+ "INNER JOIN ParticipantDid ON Participant.PersonId = ParticipantDid.PersonId) "
+							+ "INNER JOIN Movies ON Movies.ID = ParticipantDid.MovieId "
+							+ "WHERE (ParticipantDid.Directed = 'YES') "
+							+ "GROUP BY Person.ID "
+							+ "ORDER BY last ASC, first ASC;";
 				
 				//Create the PreparedStatement for the sql
 				PreparedStatement stmt = connection.prepareStatement(sqlDirectorRev);
@@ -131,17 +133,18 @@ public class MovieApp {
 				
 			} else if (qd.queryType == QueryTypes.SAME_MOVIE) {
 				
-				String sqlSameMovie =	"SELECT Movies.Title as movie_title "
-										+ "FROM ((Person INNER JOIN Actor ON Person.ID = Actor.PersonId) "
-										+ "INNER JOIN Cast ON Cast.PersonId = Actor.PersonId) "
-										+ "INNER JOIN Movies ON Cast.MovieId = Movies.ID "
-										+ "WHERE (Person.FirstName = ? AND Person.LastName = ? AND Movies.ID = ANY("
-										+ "SELECT Movies.ID AS movie_id "
-										+ "FROM ((Person INNER JOIN Actor ON Person.ID = Actor.PersonId) "
-										+ "INNER JOIN Cast ON Cast.PersonId = Actor.PersonId) "
-										+ "INNER JOIN Movies ON Cast.MovieId = Movies.ID "
-										+ "WHERE (Person.FirstName = ? AND Person.LastName = ?))) "
-										+ "ORDER BY movie_title ASC;";
+				String sqlSameMovie =
+						"SELECT Movies.Title as movie_title "
+							+ "FROM ((Person INNER JOIN Actor ON Person.ID = Actor.PersonId) "
+							+ "INNER JOIN Cast ON Cast.PersonId = Actor.PersonId) "
+							+ "INNER JOIN Movies ON Cast.MovieId = Movies.ID "
+							+ "WHERE (Person.FirstName = ? AND Person.LastName = ? AND Movies.ID = ANY("
+							+ "SELECT Movies.ID AS movie_id "
+							+ "FROM ((Person INNER JOIN Actor ON Person.ID = Actor.PersonId) "
+							+ "INNER JOIN Cast ON Cast.PersonId = Actor.PersonId) "
+							+ "INNER JOIN Movies ON Cast.MovieId = Movies.ID "
+							+ "WHERE (Person.FirstName = ? AND Person.LastName = ?))) "
+							+ "ORDER BY movie_title ASC;";
 
 				
 				//Create the PreparedStatement for the sql
@@ -159,13 +162,14 @@ public class MovieApp {
 				
 			} else if (qd.queryType == QueryTypes.TOP_MOVIE_IN_GENRE) {
 				
-				String sqlTopInGenre = "SELECT Movies.Title AS title, Genre.Name AS genre_name , "
-										+ "ROUND((((Movies.RottenTomatoes + Movies.MetaCritic) / 10 + (Movies.IMBD)) / 3), 2) AS average_rating "
-										+ "FROM (Movies INNER JOIN MovieGenre ON Movies.ID = MovieGenre.MovieId) "
-										+ "INNER JOIN Genre ON Genre.ID = MovieGenre.GenreId "
-										+ "WHERE (Genre.Name = ?) "
-										+ "ORDER BY average_rating DESC LIMIT 2;";
-				
+				String sqlTopInGenre =
+						"SELECT Movies.Title AS title, Genre.Name AS genre_name , "
+							+ "ROUND((((Movies.RottenTomatoes + Movies.MetaCritic) / 10 + (Movies.IMBD)) / 3), 2) AS average_rating "
+							+ "FROM (Movies INNER JOIN MovieGenre ON Movies.ID = MovieGenre.MovieId) "
+							+ "INNER JOIN Genre ON Genre.ID = MovieGenre.GenreId "
+							+ "WHERE (Genre.Name = ?) "
+							+ "ORDER BY average_rating DESC LIMIT 2;";
+
 				//Create the prepared statement for the sql
 				PreparedStatement stmt = connection.prepareStatement(sqlTopInGenre);
 				
@@ -181,16 +185,17 @@ public class MovieApp {
 				
 			} else if (qd.queryType == QueryTypes.WHO_WON_WHAT) {
 				
-				String sqlWhoWon = "SELECT Person.FirstName as 'First Name', Person.LastName as 'Last Name', "
-									+ "Organization.Name as Organization, AwardNames.Name AS 'Award Won', Award.Year as Year "
-									+ "FROM ((Organization INNER JOIN AwardNames ON Organization.ID = AwardNames.OrganizationId) "
-									+ "INNER JOIN Award ON Award.OrganizationId = AwardNames.OrganizationId AND Award.AwardName = AwardNames.Name) "
-									+ "INNER JOIN Person ON Person.ID = Award.PersonId "
-									+ "WHERE( "
-									+ "(SELECT Award.PersonId as person_id FROM Award "
-									+ "GROUP BY person_id "
-									+ "ORDER BY COUNT(Award.PersonId) DESC LIMIT 1) = Person.ID) "
-									+ "ORDER BY Year DESC, 'Last Name' ASC;";
+				String sqlWhoWon =
+						"SELECT Person.FirstName as 'First Name', Person.LastName as 'Last Name', "
+							+ "Organization.Name as Organization, AwardNames.Name AS 'Award Won', Award.Year as Year "
+							+ "FROM ((Organization INNER JOIN AwardNames ON Organization.ID = AwardNames.OrganizationId) "
+							+ "INNER JOIN Award ON Award.OrganizationId = AwardNames.OrganizationId AND Award.AwardName = AwardNames.Name) "
+							+ "INNER JOIN Person ON Person.ID = Award.PersonId "
+							+ "WHERE( "
+							+ "(SELECT Award.PersonId as person_id FROM Award "
+							+ "GROUP BY person_id "
+							+ "ORDER BY COUNT(Award.PersonId) DESC LIMIT 1) = Person.ID) "
+							+ "ORDER BY Year DESC, 'Last Name' ASC;";
 				
 				//Create the prepared statements for the sql
 				PreparedStatement stmt = connection.prepareStatement(sqlWhoWon);
