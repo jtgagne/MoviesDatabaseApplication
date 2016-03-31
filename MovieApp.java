@@ -23,10 +23,10 @@ public class MovieApp {
 	private static MovieApp instance;
 	private static Connection mConnection = null;
 	private static String databaseName = "Movies";
-	private static String host = "127.0.0.1";
+	private static String host = "localhost";
 	private static String port = "3306";
-	private static String user = "root";
-	private static String password = "";
+	private static String user = "gagnej3";
+	private static String password = "comp2670";
 	private static String DB_URL = "jdbc:mysql://localhost/EMP";
 	private static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	private static String url = "jdbc:mysql://"+host+":"+port+"/"+databaseName+ "?user=" + user + "&password=" + password;
@@ -81,7 +81,8 @@ public class MovieApp {
 		try (final Connection connection = DriverManager.getConnection(url)) {
 
 			if (qd.queryType == QueryTypes.ACTORS_AND_MORE) {
-				
+
+				//Query that
 				String sqlActorsMore =
 						"SELECT DISTINCT Person.FirstName AS first_name, Person.LastName AS last_name, Movies.Title AS title, "
 							+ "ParticipantDid.Produced AS produced, ParticipantDid.Directed AS directed, "
